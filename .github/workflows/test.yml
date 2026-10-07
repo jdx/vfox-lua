@@ -30,7 +30,10 @@ jobs:
         run: mise plugins link lua "$GITHUB_WORKSPACE"
       - name: Install and run Lua
         run: |
-          for v in 5.4.8 5.1.5; do
+          versions="5.4.8"
+          # 5.1.5 needs readline headers on Linux and macOS, so only build it with MinGW
+          if [ "$RUNNER_OS" = Windows ]; then versions="5.4.8 5.1.5"; fi
+          for v in $versions; do
             mise use -g "lua@$v"
             mise exec -- lua -e 'print(_VERSION)'
           done
