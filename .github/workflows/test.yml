@@ -20,13 +20,17 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4.2.4
         with:
           cache: false
           install: false
       - name: Link plugin
         run: mise plugins link lua "$GITHUB_WORKSPACE"
-      - name: Install Lua
-        run: mise use -g lua@5.4.8
-      - name: Lua runs
-        run: mise exec -- lua -e 'print(_VERSION)'
+      - name: Install and run Lua
+        run: |
+          for v in 5.4.8 5.1.5; do
+            mise use -g "lua@$v"
+            mise exec -- lua -e 'print(_VERSION)'
+          done

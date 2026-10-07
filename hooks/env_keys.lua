@@ -34,26 +34,25 @@ function PLUGIN:EnvKeys(ctx)
 
     -- Set LUA_INIT for package paths (similar to asdf-lua)
     if shortVersion then
-        local packagePath = string.format(
-            "package.path = package.path .. ';%s/share/lua/%s/?.lua;%s/share/lua/%s/?/init.lua;%s/luarocks/share/lua/%s/?.lua;%s/luarocks/share/lua/%s/?/init.lua'",
-            luaDir,
-            shortVersion,
-            luaDir,
-            shortVersion,
-            luaDir,
-            shortVersion,
-            luaDir,
-            shortVersion
-        )
-        local packageCpath = string.format(
-            "package.cpath = package.cpath .. ';%s/lib/lua/%s/?.%s;%s/luarocks/lib/lua/%s/?.%s'",
-            luaDir,
-            shortVersion,
-            libExt,
-            luaDir,
-            shortVersion,
-            libExt
-        )
+        -- %q yields a valid Lua string literal even when the path holds quotes or backslashes
+        local function lua_assign(var, patterns)
+            local entries = {}
+            for _, pattern in ipairs(patterns) do
+                table.insert(entries, string.format(pattern, luaDir, shortVersion))
+            end
+            return string.format("%s = %s .. %q", var, var, ";" .. table.concat(entries, ";"))
+        end
+
+        local packagePath = lua_assign("package.path", {
+            "%s/share/lua/%s/?.lua",
+            "%s/share/lua/%s/?/init.lua",
+            "%s/luarocks/share/lua/%s/?.lua",
+            "%s/luarocks/share/lua/%s/?/init.lua",
+        })
+        local packageCpath = lua_assign("package.cpath", {
+            "%s/lib/lua/%s/?." .. libExt,
+            "%s/luarocks/lib/lua/%s/?." .. libExt,
+        })
 
         table.insert(envs, {
             key = "LUA_INIT",

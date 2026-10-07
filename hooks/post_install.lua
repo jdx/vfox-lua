@@ -27,10 +27,11 @@ local function install_windows(sdkPath)
         'mkdir "%s\\bin" "%s\\include" && cd /d "%s"'
             .. ' && copy /Y lua.exe "%s\\bin" && copy /Y luac.exe "%s\\bin" && copy /Y *.dll "%s\\bin"'
             .. ' && copy /Y lua.h "%s\\include" && copy /Y luaconf.h "%s\\include"'
-            .. ' && copy /Y lualib.h "%s\\include" && copy /Y lauxlib.h "%s\\include"',
+            .. ' && copy /Y lualib.h "%s\\include" && copy /Y lauxlib.h "%s\\include" && copy /Y lua.hpp "%s\\include"',
         sdkPath,
         sdkPath,
         src,
+        sdkPath,
         sdkPath,
         sdkPath,
         sdkPath,
