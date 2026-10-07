@@ -8,13 +8,17 @@ A [vfox](https://github.com/version-fox/vfox) / [mise](https://mise.jdx.dev) plu
 - **Always up-to-date**: No static version list to maintain
 - **Compiles from source**: Uses official Lua source releases
 - **LuaRocks included**: Automatically installs LuaRocks for Lua 5.x versions
-- **Cross-platform**: Works on Linux and macOS
+- **Cross-platform**: Works on Linux, macOS and Windows (built with MinGW; LuaRocks is not installed on Windows)
 
 ## Requirements
 
 - A C compiler (gcc or clang)
 - make
 - curl
+
+### Windows
+
+Put MinGW's `gcc` and `mingw32-make` (or `make`) on `PATH`, for example from [WinLibs](https://winlibs.com) or MSYS2's `mingw-w64-x86_64-toolchain`.
 
 ### macOS
 
