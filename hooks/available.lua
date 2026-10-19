@@ -23,10 +23,12 @@ function PLUGIN:Available(ctx)
     -- The FTP page lists each tarball with a date cell:
     -- <A HREF="lua-5.4.8.tar.gz">...</A></TD><TD CLASS="date">2025-06-04</TD>
     local dates = {}
-    for version, day in string.gmatch(
-        resp.body,
-        'lua%-(%d+%.%d+[%.%d]*)%.tar%.gz</[Aa]></[Tt][Dd]>%s*<[Tt][Dd] [Cc][Ll][Aa][Ss][Ss]="date">(%d%d%d%d%-%d%d%-%d%d)<'
-    ) do
+    for version, day in
+        string.gmatch(
+            resp.body,
+            'lua%-(%d+%.%d+[%.%d]*)%.tar%.gz</[Aa]></[Tt][Dd]>%s*<[Tt][Dd] [Cc][Ll][Aa][Ss][Ss]="date">(%d%d%d%d%-%d%d%-%d%d)<'
+        )
+    do
         dates[version] = day .. "T00:00:00Z"
     end
 
