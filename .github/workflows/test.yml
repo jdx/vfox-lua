@@ -32,6 +32,8 @@ jobs:
       - name: Install and run Lua
         # Keep the repository's development tools and Lua version out of this smoke test.
         working-directory: ${{ runner.temp }}
+        env:
+          MISE_USE_VERSIONS_HOST: "0"
         run: |
           versions="5.4.8"
           # 5.1.5 needs readline headers on Linux and macOS, so only build it with MinGW
