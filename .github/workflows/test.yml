@@ -15,6 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash
@@ -29,11 +30,29 @@ jobs:
       - name: Link plugin
         run: mise plugins link lua "$GITHUB_WORKSPACE"
       - name: Install and run Lua
+        # Keep the repository's development tools and Lua version out of this smoke test.
+        working-directory: ${{ runner.temp }}
         run: |
           versions="5.4.8"
           # 5.1.5 needs readline headers on Linux and macOS, so only build it with MinGW
           if [ "$RUNNER_OS" = Windows ]; then versions="5.4.8 5.1.5"; fi
           for v in $versions; do
-            mise use -g "lua@$v"
-            mise exec -- lua -e 'print(_VERSION)'
+            # Retry installation only: lua.org may briefly reject requests even after
+            # mise's HTTP retries. Never retry or ignore a failed runtime assertion.
+            installed=false
+            for delay in 0 10 30; do
+              sleep "$delay"
+              if mise install "lua@$v"; then
+                installed=true
+                break
+              fi
+            done
+            if [ "$installed" != true ]; then exit 1; fi
+            actual=$(mise exec "lua@$v" -- lua -v 2>&1)
+            echo "$actual"
+            case "$actual" in
+              "Lua $v "*) ;;
+              *) echo "Expected Lua $v" >&2; exit 1 ;;
+            esac
+            mise exec "lua@$v" -- lua -e 'print(_VERSION)'
           done
